@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="ted_red">#E62B1E</color>
+
+    <color name="grey">#cccccc</color>
+
+    <color name="light_ted_red">#eb554a</color>
+</resources>
