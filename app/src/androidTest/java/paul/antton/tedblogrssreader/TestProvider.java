@@ -1,8 +1,10 @@
 package paul.antton.tedblogrssreader;
 
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.test.AndroidTestCase;
 import android.util.Log;
 
@@ -47,9 +49,6 @@ public class TestProvider extends AndroidTestCase {
         String testContentLink = "long story short";
         String testContent = "the loooong loooooong loooooong story";
 
-        ArticleDbHelper dbHelper = new ArticleDbHelper(mContext);
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-
         ContentValues values = new ContentValues();
         values.put(ArticleContract.ArticleEntry.COLUMN_TITLE, testTitle);
         values.put(ArticleContract.ArticleEntry.COLUMN_AUTHOR, testAuthor);
@@ -58,11 +57,15 @@ public class TestProvider extends AndroidTestCase {
         values.put(ArticleContract.ArticleEntry.COLUMN_CONTENT_LINK, testContentLink);
         values.put(ArticleContract.ArticleEntry.COLUMN_CONTENT, testContent);
 
-        long locationRowId;
+        Uri insertUri  = mContext.getContentResolver().insert(ArticleContract.ArticleEntry.CONTENT_URI,  values);
+        long articleRowId;
+        articleRowId = ContentUris.parseId(insertUri);
 
-        locationRowId = db.insert(ArticleContract.ArticleEntry.TABLE_NAME, null, values);
-        Log.d(LOG_TAG, "New row id: " + locationRowId);
-        assertTrue("inserting into the database failed", locationRowId != -1);
+       // articleRowId = db.insert(ArticleContract.ArticleEntry.TABLE_NAME, null, values);
+        //Log.d(LOG_TAG, "New row id: " + articleRowId);
+
+
+        assertTrue("inserting into the database WITH THE CONTENT PROVIDER failed", articleRowId != -1);
 
         Cursor cursor = mContext.getContentResolver().query(ArticleContract.ArticleEntry.CONTENT_URI, null,
                                                                                                       null,

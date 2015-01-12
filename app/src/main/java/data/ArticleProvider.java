@@ -5,6 +5,8 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
 /**
@@ -63,7 +65,25 @@ public class ArticleProvider extends ContentProvider{
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        return null;
+        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        final int match = sUriMatcher.match(uri);
+        Uri returnUri;
+            // only match base uris here -> cursors notify for descendants
+        switch (match)
+        {
+            case ARTICLE:
+            {
+                long id = db.insert(ArticleContract.ArticleEntry.TABLE_NAME, null, values);
+                if (id>0)
+                    returnUri = ArticleContract.ArticleEntry.buildArticleUri(id);
+                else
+                    throw new SQLException("Failed to insert row into "+ uri);
+                break;
+            }
+            default: throw new UnsupportedOperationException("Unknown uri: " +uri);
+        }
+        getContext().getContentResolver().notifyChange(uri, null);
+        return returnUri;
     }
 
     @Override
