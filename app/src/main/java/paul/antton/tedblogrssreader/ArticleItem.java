@@ -6,12 +6,13 @@ package paul.antton.tedblogrssreader;
 public class ArticleItem {
 
 
-    public ArticleItem(String title, String author, String date, String image_link, String content_link) {
+    public ArticleItem(String title, String author, String date, String image_link, String content_link, String full_content) {
         this.title = title;
         this.author = author;
         this.date = date;
         this.image_link = image_link;
         this.content_link = content_link;
+        this.full_content = full_content;
     }
 
     private final String title;
@@ -20,6 +21,11 @@ public class ArticleItem {
     private final String image_link;
     private final String content_link;
 
+    public String getFull_content() {
+        return full_content;
+    }
+
+    private final String full_content;
 
 
     public String getTitle() {
@@ -37,4 +43,6 @@ public class ArticleItem {
     public String getImage_link() {
         return image_link;
     }
+
+    public String getContent_link() {return content_link;}
 }

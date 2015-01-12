@@ -1,6 +1,6 @@
 package paul.antton.tedblogrssreader;
 
-import android.util.Xml;
+import android.util.Log;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -24,7 +24,7 @@ public class TEDRssParser {
             XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
             factory.setNamespaceAware(true);
             XmlPullParser parser = factory.newPullParser();
-            parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, true);
+           // parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, true);
             parser.setInput(inputStream, null);
             parser.nextTag();
             return  readFeed (parser);
@@ -64,7 +64,32 @@ public class TEDRssParser {
         String image_link = null;
         String date = null;
 
+        int eventType = parser.getEventType();
+        while (eventType != XmlPullParser.END_TAG)
+        {
+            if (eventType == XmlPullParser.START_TAG)
+            {
+                String prefix = parser.getPrefix();
+                String name = parser.getName();
+                Log.i("XML ", String.format("prefix=%s,name=%s", prefix, name));
+                if (name.equals("title"))
+                {
+                    title = readTitle(parser);
+                }
+                else if (name.equals("link"))
+                {
+                    content_link = readContentLink(parser);
+                }
 
+                else if (name.equals("creator"))
+                {
+                    author = "Puiculita mea iubita";
+                }
+            }
+            eventType = parser.next();
+        }
+
+        /*
         while (parser.next() != XmlPullParser.END_TAG)
         {
             if (parser.getEventType() != XmlPullParser.START_TAG)
@@ -72,6 +97,8 @@ public class TEDRssParser {
                 continue;
             }
             String name = parser.getName();
+            String prefix = parser.getPrefix();
+
 
             if (name.equals("title"))
             {
@@ -81,18 +108,18 @@ public class TEDRssParser {
             {
                 content_link = readContentLink(parser);
             }
-
-           else if (name.equals("creator"))
+            else if (name.equals("pubDate"))
             {
                 author = readCreator(parser);
             }
 
+            Log.i("XML ", String.format("prefix=%s,name=%s", prefix, name));
         }
-
+*/
         // image_link = "http://tedconfblog.files.wordpress.com/2015/01/koprivinca.jpg?w=150";
         image_link = "http://1.gravatar.com/blavatar/909a50edb567d0e7b04dd0bcb5f58306?s=96&d=http%3A%2F%2Fs2.wp.com%2Fi%2Fbuttonw-com.png";
         date = "WHY NO DATE";
-        return new ArticleItem(title, author, date, image_link, content_link);
+        return new ArticleItem(title, author, date, image_link, content_link, full_content);
     }
 
     private String readTitle(XmlPullParser parser) throws IOException, XmlPullParserException {
@@ -110,10 +137,10 @@ public class TEDRssParser {
     }
 
     private String readCreator(XmlPullParser parser) throws IOException, XmlPullParserException {
-        parser.require(XmlPullParser.START_TAG, "dc", "creator");
+        parser.require(XmlPullParser.START_TAG, null, "creator");
         String author = readText(parser);
-        parser.require(XmlPullParser.END_TAG, "dc", "creator" );
-        return "PULA N CUR";
+        parser.require(XmlPullParser.END_TAG, null, "creator" );
+        return "piscalai";
     }
 
     private String readText(XmlPullParser parser) throws IOException, XmlPullParserException {

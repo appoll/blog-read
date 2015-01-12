@@ -21,6 +21,7 @@ import java.util.List;
 public class TEDRssService extends IntentService {
 
     private static final String RSS_LINK = "http://blog.ted.com/feed/";
+    private static final String RSS_LINK_TEST = "http://stackoverflow.com/feeds/tag?tagnames=android&sort=newest";
     public static final String ARTICLES = "articles";
     public static final String RECEIVER = "receiver";
 
@@ -37,8 +38,17 @@ public class TEDRssService extends IntentService {
         List<ArticleItem> articleItems = null;
 
         try {
+
+            //StackoverflowParser pearsar = new StackoverflowParser();
+           // articleItems = pearsar.parse(getInputStream(RSS_LINK_TEST));
+
+            RssParser parser = new RssParser();
+            articleItems = parser.parse(getInputStream(RSS_LINK));
+
+            /*
             TEDRssParser parser = new TEDRssParser();
             articleItems = parser.parse(getInputStream(RSS_LINK));
+            */
         }
         catch (XmlPullParserException e) {
             Log.w(e.getMessage(), e);

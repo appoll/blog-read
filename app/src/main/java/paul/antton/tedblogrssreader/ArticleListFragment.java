@@ -2,6 +2,7 @@ package paul.antton.tedblogrssreader;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
@@ -9,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -21,7 +23,8 @@ import java.util.List;
 /**
  * Created by Paul's on 10-Jan-15.
  */
-public class ArticleListFragment extends Fragment{
+
+public class ArticleListFragment extends Fragment {
     /**
      * The fragment argument representing the section number for this
      * fragment.
@@ -62,7 +65,15 @@ public class ArticleListFragment extends Fragment{
             mRootView = inflater.inflate(R.layout.fragment_article_list, container, false);
             mProgressBar = (ProgressBar)mRootView.findViewById(R.id.progressBar);
             mArticleList = (ListView)mRootView.findViewById(R.id.listview_articles);
-
+            mArticleList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    ArticleAdapter adapter = (ArticleAdapter) parent.getAdapter();
+                    ArticleItem item = (ArticleItem) adapter.getItem(position);
+                    String content_link = item.getContent_link();
+                    ((Callback)getActivity()).onItemSelected(content_link);
+                }
+            });
             startService();
         }
         else
@@ -106,7 +117,7 @@ public class ArticleListFragment extends Fragment{
             List <ArticleItem> articles = (List<ArticleItem>) resultData.getSerializable(TEDRssService.ARTICLES);
             if (articles != null)
             {
-                Toast.makeText(getActivity(),"nu-s goale in pastele matii" + articles.size(),Toast.LENGTH_SHORT ).show();
+              //  Toast.makeText(getActivity(),"nu-s goale in pastele matii" + articles.size(),Toast.LENGTH_SHORT ).show();
                 ArticleAdapter adapter = new ArticleAdapter(getActivity(), articles);
                 mArticleList.setAdapter(adapter);
             }
@@ -119,4 +130,13 @@ public class ArticleListFragment extends Fragment{
             mArticleList.setVisibility(View.VISIBLE);
         }
     };
+
+
+
+
+
+    public interface Callback
+    {
+        public void onItemSelected (String content_link);
+    }
 }

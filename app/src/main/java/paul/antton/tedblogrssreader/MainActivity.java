@@ -1,5 +1,7 @@
 package paul.antton.tedblogrssreader;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.FragmentManager;
@@ -8,10 +10,14 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v4.widget.DrawerLayout;
+import android.widget.AdapterView;
 
 
 public class MainActivity extends ActionBarActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks,
+        ArticleListFragment.Callback
+
+{
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -98,4 +104,10 @@ public class MainActivity extends ActionBarActivity
     }
 
 
+    @Override
+    public void onItemSelected(String content_link) {
+        Uri uri = Uri.parse(content_link);
+        Intent intent = new Intent (Intent.ACTION_VIEW, uri);
+        startActivity(intent);
+    }
 }
