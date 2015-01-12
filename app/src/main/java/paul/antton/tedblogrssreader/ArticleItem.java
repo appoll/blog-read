@@ -20,12 +20,14 @@ public class ArticleItem {
     private final String date;
     private final String image_link;
     private final String content_link;
+    private final String full_content;
+
 
     public String getFull_content() {
         return full_content;
     }
 
-    private final String full_content;
+
 
 
     public String getTitle() {
