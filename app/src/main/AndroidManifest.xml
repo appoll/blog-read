@@ -19,6 +19,12 @@
             </intent-filter>
         </activity>
 
+        <provider
+            android:authorities="paul.antton.tedblogrssreader"
+            android:syncable="true"
+            android:exported="false"
+            android:name="data.ArticleProvider"/>
+
         <service android:name=".TEDRssService"/>
 
     </application>
