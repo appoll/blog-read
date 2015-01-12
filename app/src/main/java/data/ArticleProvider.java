@@ -88,12 +88,44 @@ public class ArticleProvider extends ContentProvider{
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        return 0;
+        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        final int match = sUriMatcher.match(uri);
+        int rowsDeleted;
+
+        switch (match)
+        {
+            case ARTICLE:
+                rowsDeleted = db.delete(ArticleContract.ArticleEntry.TABLE_NAME, selection, selectionArgs);
+                break;
+            default: throw new UnsupportedOperationException("Unknown uri: " +uri);
+        }
+        if (null == selection || 0!=rowsDeleted)
+        {
+            getContext().getContentResolver().notifyChange(uri,null);
+        }
+
+        return rowsDeleted;
     }
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        return 0;
+        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        final int match = sUriMatcher.match(uri);
+        int rowsUpdated;
+        // only match base uris here -> cursors notify for descendants
+        switch (match)
+        {
+            case ARTICLE:
+            {
+                rowsUpdated = db.update(ArticleContract.ArticleEntry.TABLE_NAME, values,selection,selectionArgs);
+                break;
+            }
+            default: throw new UnsupportedOperationException("Unknown uri: " +uri);
+        }
+        if (rowsUpdated != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        return rowsUpdated;
     }
 
     private static UriMatcher buildUriMatcher()
