@@ -1,7 +1,6 @@
 package paul.antton.tedblogrssreader;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.FragmentManager;
@@ -10,7 +9,8 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v4.widget.DrawerLayout;
-import android.widget.AdapterView;
+
+import sync.SyncAdapter;
 
 
 public class MainActivity extends ActionBarActivity
@@ -18,7 +18,7 @@ public class MainActivity extends ActionBarActivity
         ArticleListFragment.Callback
 
 {
-
+    private boolean mTwoPane;
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
@@ -42,6 +42,25 @@ public class MainActivity extends ActionBarActivity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+
+        if (findViewById(R.id.read_article_container) != null)
+        {
+            mTwoPane = true;
+
+            if (savedInstanceState == null)
+            {
+                getSupportFragmentManager().
+                        beginTransaction().
+                        replace(R.id.read_article_container, new ArticleReadFragment()).
+                        commit();
+            }
+        }
+        else
+        {
+            mTwoPane = false;
+        }
+
+        SyncAdapter.initializeSyncAdapter(this);
     }
 
     @Override
@@ -105,9 +124,20 @@ public class MainActivity extends ActionBarActivity
 
 
     @Override
-    public void onItemSelected(String content_link) {
-        Uri uri = Uri.parse(content_link);
-        Intent intent = new Intent (Intent.ACTION_VIEW, uri);
-        startActivity(intent);
+    public void onItemSelected(String content) {
+        if (mTwoPane)
+        {
+            Bundle args = new Bundle();
+            args.putString("continut", content);
+          //  args.putString("aidi", content);                // article_id
+            ArticleReadFragment fragment = new ArticleReadFragment();
+            fragment.setArguments(args);
+
+            getSupportFragmentManager().beginTransaction().replace(R.id.read_article_container, fragment).commit();
+        }
+        else {
+            Intent intent = new Intent(this, ArticleReadActivity.class).putExtra("continut", content);
+            startActivity(intent);
+        }
     }
 }

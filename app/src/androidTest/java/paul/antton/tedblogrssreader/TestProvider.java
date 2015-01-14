@@ -100,8 +100,8 @@ public class TestProvider extends AndroidTestCase {
             int contentIndex = cursor.getColumnIndex(ArticleContract.ArticleEntry.COLUMN_CONTENT);
             String content = cursor.getString(contentIndex);
 
-            assertEquals("knowss everything", title);
-            assertEquals("Doess he?", author);
+            assertEquals("knows everything", title);
+            assertEquals("Does he?", author);
             assertEquals(testDate,date);
             assertEquals(testImage,image_link);
             assertEquals(testContentLink,content_link);

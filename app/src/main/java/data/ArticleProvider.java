@@ -48,6 +48,19 @@ public class ArticleProvider extends ContentProvider{
                 break;
             }
 
+            case ARTICLE_ID:
+            {
+                retCursor = mOpenHelper.getReadableDatabase().query(
+                        ArticleContract.ArticleEntry.TABLE_NAME,
+                        projection,
+                        ArticleContract.ArticleEntry._ID + "= '" + ContentUris.parseId(uri)+"'",
+                        null,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            }
             default: throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
         retCursor.setNotificationUri(getContext().getContentResolver(), uri);
@@ -57,10 +70,48 @@ public class ArticleProvider extends ContentProvider{
     @Override
     public String getType(Uri uri) {
         final int match = sUriMatcher.match(uri);
-        if (match == ARTICLE)
-            return ArticleContract.ArticleEntry.CONTENT_TYPE;
-        else throw new UnsupportedOperationException("Unknown uri: " + uri);
 
+        switch (match)
+        {
+            case ARTICLE:
+                return ArticleContract.ArticleEntry.CONTENT_TYPE;
+            case ARTICLE_ID:
+                return ArticleContract.ArticleEntry.CONTENT_ITEM_TYPE;
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
+    }
+
+    @Override
+    public int bulkInsert(Uri uri, ContentValues[] values) {
+        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        final int match = sUriMatcher.match(uri);
+
+        // only match base uris here -> cursors notify for descendants
+        switch (match) {
+            case ARTICLE:
+                db.beginTransaction();
+                int returnCount = 0;
+                try
+                {
+                    for (ContentValues value: values)
+                    {
+                        long id = db.insert(ArticleContract.ArticleEntry.TABLE_NAME, null, value);
+                        if (id!=-1)
+                        {
+                            returnCount++;
+                        }
+                    }
+                    db.setTransactionSuccessful();
+                }
+                finally {
+                    db.endTransaction();
+                }
+                getContext().getContentResolver().notifyChange(uri,null);
+                return returnCount;
+            default:
+                return super.bulkInsert(uri, values);
+        }
     }
 
     @Override
@@ -117,7 +168,7 @@ public class ArticleProvider extends ContentProvider{
         {
             case ARTICLE:
             {
-                rowsUpdated = db.update(ArticleContract.ArticleEntry.TABLE_NAME, values,selection,selectionArgs);
+                rowsUpdated = db.update(ArticleContract.ArticleEntry.TABLE_NAME, values, selection, selectionArgs);
                 break;
             }
             default: throw new UnsupportedOperationException("Unknown uri: " +uri);
@@ -135,7 +186,7 @@ public class ArticleProvider extends ContentProvider{
 
         // For each type of URI you want to add, create a corresponding code.
         matcher.addURI(authority,ArticleContract.PATH_ARTICLE,ARTICLE);
-
+        matcher.addURI(authority,ArticleContract.PATH_ARTICLE + "/#", ARTICLE_ID);
         return matcher;
     }
 }

@@ -5,17 +5,11 @@
     >
 
     <ListView
-        android:visibility="gone"
+
         android:id="@+id/listview_articles"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:choiceMode="singleChoice"
         />
-
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true" />
 
 </FrameLayout>

@@ -26,7 +26,7 @@ public final class ArticleContract {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_ARTICLE).build();
 
         public static final String CONTENT_TYPE = "vnd.android.cursor.dir/" + CONTENT_AUTHORITY + "/" + PATH_ARTICLE ;
-        
+        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/" + CONTENT_AUTHORITY + "/" + PATH_ARTICLE;
 
         public static final String TABLE_NAME = "articles";
 

@@ -2,8 +2,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="paul.antton.tedblogrssreader" >
 
+    <uses-permission android:name="android.permission.INTERNET" />
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS"/>
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS"/>
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
+
+
+
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
@@ -19,13 +26,45 @@
             </intent-filter>
         </activity>
 
-        <provider
-            android:authorities="paul.antton.tedblogrssreader"
-            android:syncable="true"
-            android:exported="false"
-            android:name="data.ArticleProvider"/>
+        <activity
+            android:name=".ArticleReadActivity"
+            android:label="@string/title_activity_article_read"
+            android:parentActivityName=".MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="paul.antton.tedblogrssreader.MainActivity" />
+        </activity>
 
-        <service android:name=".TEDRssService"/>
+
+        <provider
+            android:name="data.ArticleProvider"
+            android:authorities="paul.antton.tedblogrssreader"
+            android:exported="false"
+            android:syncable="true" />
+
+        <service android:name=".TEDRssService" />
+
+        <receiver android:name=".TEDRssService$AlarmReceiver"/>
+
+        <service android:name="sync.AuthenticatorService">
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/authenticator"
+                />
+        </service>
+
+        <service android:name="sync.SyncService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/syncadapter"/>
+            </service>
 
     </application>
 

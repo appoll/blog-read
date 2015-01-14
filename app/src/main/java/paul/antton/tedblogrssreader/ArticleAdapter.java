@@ -1,9 +1,13 @@
 package paul.antton.tedblogrssreader;
 
 import android.content.Context;
+import android.database.Cursor;
+import android.text.Layout;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -14,56 +18,41 @@ import java.util.List;
 /**
  * Created by Paul's on 10-Jan-15.
  */
-public class ArticleAdapter extends BaseAdapter {
-    private List <ArticleItem> mArticleItems;
-    private Context mContext;
+public class ArticleAdapter extends CursorAdapter {
 
-    public ArticleAdapter (Context context, List<ArticleItem> items)
-    {
-        mContext = context;
-        mArticleItems = items;
-    }
-    @Override
-    public int getCount() {
-        return mArticleItems.size();
+
+    public ArticleAdapter(Context context, Cursor c, int flags) {
+        super(context, c, flags);
     }
 
     @Override
-    public Object getItem(int position) {
-        return mArticleItems.get(position);
+    public View newView(Context context, Cursor cursor, ViewGroup parent) {
+
+        View view = LayoutInflater.from(context).inflate(R.layout.list_item_article,parent,false);
+        ViewHolder viewHolder = new ViewHolder(view);
+        view.setTag(viewHolder);
+        return view;
     }
 
     @Override
-    public long getItemId(int position) {
-        return position;
+    public void bindView(View view, Context context, Cursor cursor) {
+        ViewHolder viewHolder = (ViewHolder) view.getTag();
+
+        String title = cursor.getString(ArticleListFragment.COL_ARTICLE_TITLE);
+        viewHolder.titleView.setText(title);
+
+        String author = cursor.getString(ArticleListFragment.COL_ARTICLE_AUTHOR);
+        viewHolder.authorView.setText(author);
+
+        String date = cursor.getString(ArticleListFragment.COL_ARTICLE_DATE);
+        viewHolder.dateView.setText(date);
+
+        String imageUrl = cursor.getString(ArticleListFragment.COL_ARTICLE_IMAGE);
+        Picasso.with(context).load(imageUrl).into(viewHolder.imageView);
+
     }
 
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder;
-
-        if (convertView == null)
-        {
-            convertView = View.inflate(mContext,R.layout.list_item_article,null);
-            holder = new ViewHolder(convertView);
-            convertView.setTag(holder);
-        }
-        else
-        {
-            holder = (ViewHolder)convertView.getTag();
-        }
-
-        holder.authorView.setText(mArticleItems.get(position).getAuthor());
-        holder.titleView.setText(mArticleItems.get(position).getTitle());
-        holder.dateView.setText(mArticleItems.get(position).getDate());
-
-        String imageUrl = mArticleItems.get(position).getImage_link();
-        Picasso.with(mContext).load(imageUrl).into(holder.imageView);
-
-        return convertView;
-    }
-
- static class ViewHolder
+    static class ViewHolder
     {
         public final ImageView imageView;
         public final TextView dateView;
